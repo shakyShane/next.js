@@ -748,7 +748,6 @@ export default class Server {
         },
       })
     }
-
     const redirects = this.customRoutes.redirects.map((redirect) => {
       const redirectRoute = getCustomRoute(redirect, 'redirect')
       return {
@@ -838,7 +837,33 @@ export default class Server {
           }
         },
       } as Route
-    })
+    });
+
+    try {
+      const maybe = require(require("path").join(this.dir, 'lib', 'resolver'));
+      rewrites.push({
+        check: true,
+        type: 'rewrite',
+        name: `Magento route`,
+        match: route('/:pathname*'),
+        fn: async (req, res, params, parsedUrl) => {
+
+          const { newUrl, parsedDestination } = await maybe(req.url);
+          // console.log('{ newUrl, parsedDestination }', { newUrl, parsedDestination });
+
+          ;(req as any)._nextRewroteUrl = newUrl
+          ;(req as any)._nextDidRewrite = (req as any)._nextRewroteUrl !== req.url
+
+          return {
+            finished: false,
+            pathname: newUrl,
+            query: parsedDestination.query,
+          }
+        },
+      })
+    } catch (e) {
+      console.log(e);
+    }
 
     const catchAllRoute: Route = {
       match: route('/:path*'),
@@ -1853,6 +1878,7 @@ export default class Server {
   }
 
   private _validFilesystemPathSet: Set<string> | null = null
+
   private getFilesystemPaths(): Set<string> {
     if (this._validFilesystemPathSet) {
       return this._validFilesystemPathSet
