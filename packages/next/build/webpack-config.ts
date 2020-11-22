@@ -339,10 +339,6 @@ export default async function getBaseWebpackConfig(
     'next/dist/next-server/lib/router/utils/resolve-rewrites'
   )
 
-  const customResolver = require.resolve(
-    path.join(dir, 'lib', 'resolver.js')
-  )
-
   const resolveConfig = {
     // Disable .mjs for node_modules bundling
     extensions: isServer
@@ -390,7 +386,6 @@ export default async function getBaseWebpackConfig(
       [clientResolveRewrites]: hasRewrites
         ? clientResolveRewrites
         : require.resolve('next/dist/client/dev/noop.js'),
-      '@@customResolver': customResolver,
     },
     mainFields: isServer ? ['main', 'module'] : ['browser', 'module', 'main'],
     plugins: isWebpack5

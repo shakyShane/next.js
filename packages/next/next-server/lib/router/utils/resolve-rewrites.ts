@@ -6,7 +6,7 @@ import { removePathTrailingSlash } from '../../../../client/normalize-trailing-s
 
 const customRouteMatcher = pathMatch(true)
 
-export default async function resolveRewrites(
+export default function resolveRewrites(
   asPath: string,
   pages: string[],
   basePath: string,
@@ -14,9 +14,7 @@ export default async function resolveRewrites(
   query: ParsedUrlQuery,
   resolveHref: (path: string) => string
 ) {
-  let output;
   if (!pages.includes(asPath)) {
-    let resolved = false;
     for (const rewrite of rewrites) {
       const matcher = customRouteMatcher(rewrite.source)
       const params = matcher(asPath)
@@ -34,37 +32,22 @@ export default async function resolveRewrites(
           rewrite.basePath === false ? '' : basePath
         )
         asPath = destRes.parsedDestination.pathname!
-        output = destRes.parsedDestination.pathname!
         Object.assign(query, destRes.parsedDestination.query)
 
         if (pages.includes(removePathTrailingSlash(asPath))) {
           // check if we now match a page as this means we are done
           // resolving the rewrites
-          resolved = true;
           break
         }
 
         // check if we match a dynamic-route, if so we break the rewrites chain
-        const resolvedHref = resolveHref(output)
+        const resolvedHref = resolveHref(asPath)
 
         if (resolvedHref !== asPath && pages.includes(resolvedHref)) {
-          resolved = true;
           break
         }
       }
     }
-
-    // now check for a custom resolver
-    try {
-      const resolver = require("@@customResolver");
-      if (!resolved && resolver) {
-        const { newUrl, parsedDestination } = await resolver(asPath);
-        return { asPath: newUrl, query: { ...query, ...parsedDestination.query } }
-      }
-    } catch (e) {
-      console.error("error", e);
-    }
   }
-
-  return { asPath, query }
+  return asPath
 }

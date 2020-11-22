@@ -2,12 +2,12 @@
   "name": "rewrites",
   "version": "1.0.0",
   "scripts": {
-    "dev": "NODE_OPTIONS='--inspect' next dev",
+    "dev": "next dev",
     "build": "next build",
     "start": "next start"
   },
   "dependencies": {
-    "next": "file:/Users/shakyshane/sites/oss/next.js/packages/next",
+    "next": "latest",
     "react": "^16.13.1",
     "react-dom": "^16.13.1"
   },
