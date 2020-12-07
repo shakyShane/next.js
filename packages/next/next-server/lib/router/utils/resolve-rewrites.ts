@@ -58,7 +58,7 @@ export default async function resolveRewrites(
     try {
       const resolver = require("@@customResolver");
       if (!resolved && resolver) {
-        const { newUrl, parsedDestination } = await resolver(asPath);
+        const { newUrl, parsedDestination } = await resolver.default(asPath);
         return { asPath: newUrl, query: { ...query, ...parsedDestination.query } }
       }
     } catch (e) {

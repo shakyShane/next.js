@@ -57,6 +57,7 @@ import WebpackConformancePlugin, {
   ReactSyncScriptsConformanceCheck,
 } from './webpack/plugins/webpack-conformance-plugin'
 import { WellKnownErrorsPlugin } from './webpack/plugins/wellknown-errors-plugin'
+import * as fs from 'fs'
 
 type ExcludesFalse = <T>(x: T | false) => x is T
 
@@ -339,9 +340,8 @@ export default async function getBaseWebpackConfig(
     'next/dist/next-server/lib/router/utils/resolve-rewrites'
   )
 
-  const customResolver = require.resolve(
-    path.join(dir, 'lib', 'resolver.js')
-  )
+  const maybeCustom = path.join(dir, 'lib', 'resolver.ts');
+  const customResolver = fs.existsSync(maybeCustom) && maybeCustom;
 
   const resolveConfig = {
     // Disable .mjs for node_modules bundling
@@ -390,7 +390,9 @@ export default async function getBaseWebpackConfig(
       [clientResolveRewrites]: hasRewrites
         ? clientResolveRewrites
         : require.resolve('next/dist/client/dev/noop.js'),
-      '@@customResolver': customResolver,
+      '@@customResolver': customResolver
+        ? customResolver
+        : require.resolve('next/dist/client/dev/noop.js')
     },
     mainFields: isServer ? ['main', 'module'] : ['browser', 'module', 'main'],
     plugins: isWebpack5

@@ -840,32 +840,6 @@ export default class Server {
       } as Route
     });
 
-    try {
-      const maybe = require(require("path").join(this.dir, 'lib', 'resolver'));
-      rewrites.push({
-        check: true,
-        type: 'rewrite',
-        name: `Magento route`,
-        match: route('/:pathname*'),
-        fn: async (req, res, params, parsedUrl) => {
-
-          const { newUrl, parsedDestination } = await maybe(req.url);
-          // console.log('{ newUrl, parsedDestination }', { newUrl, parsedDestination });
-
-          ;(req as any)._nextRewroteUrl = newUrl
-          ;(req as any)._nextDidRewrite = (req as any)._nextRewroteUrl !== req.url
-
-          return {
-            finished: false,
-            pathname: newUrl,
-            query: parsedDestination.query,
-          }
-        },
-      })
-    } catch (e) {
-      console.log(e);
-    }
-
     const catchAllRoute: Route = {
       match: route('/:path*'),
       type: 'route',
