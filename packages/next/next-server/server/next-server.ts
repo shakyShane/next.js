@@ -838,7 +838,7 @@ export default class Server {
           }
         },
       } as Route
-    })
+    });
 
     const catchAllRoute: Route = {
       match: route('/:path*'),

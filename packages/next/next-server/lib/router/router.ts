@@ -737,14 +737,16 @@ export default class Router implements BaseRouter {
     let resolvedAs = as
 
     if (process.env.__NEXT_HAS_REWRITES) {
-      resolvedAs = resolveRewrites(
+      const { query: resolvedQuery, asPath } = await resolveRewrites(
         parseRelativeUrl(as).pathname,
         pages,
         basePath,
         rewrites,
         query,
         (p: string) => this._resolveHref({ pathname: p }, pages).pathname!
-      )
+      );
+      Object.assign(query, resolvedQuery);
+      resolvedAs = asPath
 
       if (resolvedAs !== as) {
         const potentialHref = removePathTrailingSlash(

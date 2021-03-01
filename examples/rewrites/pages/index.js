@@ -40,6 +40,9 @@ const Index = () => (
           <li>
             <a href="/docs/page">Visit External URL</a>
           </li>
+          <li>
+            <Link href="/sofas">Sofas</Link>
+          </li>
         </ul>
       </nav>
       <p>
